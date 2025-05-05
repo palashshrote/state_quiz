@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <title>S_CAP</title>
+  </head>
+  <body>
+    <form action="/submit" method="post">
+      <div class="container">
+        <h2>Total score: <span><%= score %></span></h2>
+        <% if(locals) { %>
+        <h1><%=locals.question.region%></h1>
+        <% } %>
+        <input class="answer-box" type="text" name="answer" placeholder="Enter the capital" />
+        <br /><button type="submit">Submit</button>
+      </div>
+    </form>
+    <script>
+      var wasCorrect = "<%=locals.isCorrect%>";
+      console.log("Your answer: " + wasCorrect);
+      if (wasCorrect === "false") {
+        alert("Game over, Best score: <%=locals.score%>");
+        window.location.href = "/";
+      }
+    </script>
+  </body>
+</html>
