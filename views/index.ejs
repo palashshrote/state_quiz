@@ -13,7 +13,13 @@
         <% if(locals) { %>
         <h1><%=locals.question.region%></h1>
         <% } %>
-        <input class="answer-box" type="text" name="answer" placeholder="Enter the capital" />
+        <input
+          class="answer-box"
+          type="text"
+          name="answer"
+          autofocus
+          placeholder="Enter the capital"
+        />
         <br /><button type="submit">Submit</button>
       </div>
     </form>
@@ -22,6 +28,11 @@
       console.log("Your answer: " + wasCorrect);
       if (wasCorrect === "false") {
         alert("Game over, Best score: <%=locals.score%>");
+        window.location.href = "/";
+      }
+      var completed = "<%=locals.completed%>";
+      if (completed === "true") {
+        alert("You nailed it");
         window.location.href = "/";
       }
     </script>

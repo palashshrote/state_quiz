@@ -22,6 +22,8 @@ app.listen(port, () => {
 
 var currentQuestion;
 var userScore;
+var randomIndex;
+var appearedQuestions = [];
 let quiz = [
   { region: "India", capital: "New Delhi" },
   { region: "Russia", capital: "Moscow" },
@@ -36,11 +38,10 @@ db.query("SELECT * FROM stateutcapital", (err, res) => {
   db.end();
 });
 app.get("/", (req, res) => {
-  nextQuestion();
+  // nextQuestion();
+  refresh();
   userScore = 0;
   res.render("index.ejs", { question: currentQuestion, score: userScore });
-
-  // res.send("hello");
 });
 app.post("/submit", (req, res) => {
   console.log(req.body);
@@ -51,14 +52,42 @@ app.post("/submit", (req, res) => {
     userScore++;
     ansCorrect = true;
   }
-  nextQuestion();
-  res.render("index.ejs", {
-    question: currentQuestion,
-    score: userScore,
-    isCorrect: ansCorrect,
-  });
-});
+  appearedQuestions.push(randomIndex);
+  if (appearedQuestions.length === quiz.length) {
+    if (ansCorrect) {
+      console.log("Length equals");
+      console.log("Completed");
+      res.render("index.ejs", {
+        question: currentQuestion,
+        score: userScore,
+        completed: "true",
+      });
+    } else {
+      res.render("index.ejs", {
+        question: currentQuestion,
+        score: userScore,
+        isCorrect: ansCorrect,
+      });
+    }
+  } else {
+    nextQuestion(res);
 
-function nextQuestion() {
-  currentQuestion = quiz[Math.floor(Math.random() * quiz.length)];
+    res.render("index.ejs", {
+      question: currentQuestion,
+      score: userScore,
+      isCorrect: ansCorrect,
+    });
+  }
+});
+function refresh() {
+  appearedQuestions = [];
+  randomIndex = Math.floor(Math.random() * quiz.length);
+  currentQuestion = quiz[randomIndex];
+}
+function nextQuestion(res) {
+  randomIndex = Math.floor(Math.random() * quiz.length);
+  while (appearedQuestions.includes(randomIndex)) {
+    randomIndex = Math.floor(Math.random() * quiz.length);
+  }
+  currentQuestion = quiz[randomIndex];
 }
