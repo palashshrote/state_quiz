@@ -29,7 +29,7 @@ let quiz = [
   { region: "Russia", capital: "Moscow" },
   { region: "Nepal", capital: "Kathmandu" },
 ];
-db.query("SELECT * FROM stateutcapital", (err, res) => {
+db.query("SELECT * FROM state_cap", (err, res) => {
   if (err) {
     console.log("db error: " + err.stack);
   } else {
@@ -43,10 +43,14 @@ app.get("/", (req, res) => {
   userScore = 0;
   res.render("index.ejs", { question: currentQuestion, score: userScore });
 });
+app.get("/endQuiz", (req, res) => {
+  endQuiz(res);
+});
 app.post("/submit", (req, res) => {
   console.log(req.body);
   var userAnswer = req.body.answer;
   var ansCorrect = false;
+  //payload for correct answer
   if (userAnswer.toLowerCase() === currentQuestion.capital.toLowerCase()) {
     console.log("correct");
     userScore++;
@@ -57,28 +61,30 @@ app.post("/submit", (req, res) => {
     if (ansCorrect) {
       console.log("Length equals");
       console.log("Completed");
-      res.render("index.ejs", {
-        question: currentQuestion,
-        score: userScore,
-        completed: "true",
-      });
+      endQuiz(res);
     } else {
-      res.render("index.ejs", {
-        question: currentQuestion,
-        score: userScore,
-        isCorrect: ansCorrect,
-      });
+      renderNextQuestion(res, ansCorrect);
     }
   } else {
     nextQuestion(res);
 
-    res.render("index.ejs", {
-      question: currentQuestion,
-      score: userScore,
-      isCorrect: ansCorrect,
-    });
+    renderNextQuestion(res, ansCorrect);
   }
 });
+function renderNextQuestion(res, ansCorrect) {
+  res.render("index.ejs", {
+    question: currentQuestion,
+    score: userScore,
+    isCorrect: ansCorrect,
+  });
+}
+function endQuiz(res) {
+  res.render("index.ejs", {
+    question: currentQuestion,
+    score: userScore,
+    completed: "true",
+  });
+}
 function refresh() {
   appearedQuestions = [];
   randomIndex = Math.floor(Math.random() * quiz.length);
